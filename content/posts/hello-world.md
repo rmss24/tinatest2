@@ -4,6 +4,8 @@ imgSrc: /preview.jpg
 brand: Ferrari
 detailsCar: A me piace bianca però
 gallery:
+  - image: /preview.jpg
+  - image: /preview.jpg
   - image: /hero.jpg
     caption: Lamborghin Brum
 ---
