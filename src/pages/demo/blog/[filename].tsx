@@ -1,13 +1,29 @@
 // THIS FILE HAS BEEN GENERATED WITH THE TINA CLI.
 // @ts-nocheck
 // This is a demo file once you have tina setup feel free to delete this file
-
+'use client'
 import Head from 'next/head'
 import { useTina } from 'tinacms/dist/react'
 import { TinaMarkdown } from 'tinacms/dist/rich-text'
 import client from '../../../../tina/__generated__/client'
+import Image from 'next/image'
+import { useState } from 'react'
+import Lightbox from 'react-spring-lightbox'
+import { ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
-const BlogPage = (props) => {
+
+const CarPage = (props) => {
+  const [isOpen, setOpen] = useState(false)
+  const [currentImageIndex, setCurrentIndex] = useState(0)
+
+  const images = [
+    {src:"https://www.blumotive.it/images/cars/lamborghini-sterrato/gallery/1.jpg", alt:""},
+    {src:"https://www.blumotive.it/images/cars/lamborghini-sterrato/gallery/2.jpg", alt:""}
+  ]
+  
+  const gotoPrevious = () => currentImageIndex > 0 && setCurrentIndex(currentImageIndex - 1)
+  const gotoNext = () => currentImageIndex + 1 < images.length && setCurrentIndex(currentImageIndex + 1)
+
   const { data } = useTina({
     query: props.query,
     variables: props.variables,
@@ -17,7 +33,6 @@ const BlogPage = (props) => {
   return (
     <>
       <Head>
-        {/* Tailwind CDN */}
         <link
           rel='stylesheet'
           href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.7/tailwind.min.css'
@@ -26,31 +41,78 @@ const BlogPage = (props) => {
           referrerPolicy='no-referrer'
         />
       </Head>
-      <div>
-        <div
-          style={{
-            textAlign: 'center',
-          }}
-        >
-          <h1 className='text-3xl m-8 text-center leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl'>
-            {data.post.title}
-          </h1>
-          <ContentSection content={data.post.body}></ContentSection>
+      <div className="bg-gray-900">
+        <div className="relative isolate overflow-hidden">
+        { data.post.imgSrc ? <Image src={data.post.imgSrc} alt="layout Hero Image" className="absolute inset-0 -z-10 h-full w-full object-cover" layout="fill" objectFit="cover" /> : null }
+          <div className="absolute inset-0 h-full w-full bg-black opacity-10" />
+          <div className="relative mx-auto max-w-7xl px-6 py-28 sm:py-36 lg:px-8">
+            <div className="mx-auto max-w-2xl gap-x-14 lg:mx-0 lg:flex lg:max-w-none lg:items-center">
+              <div className="w-full max-w-xl lg:shrink-0 xl:max-w-3xl">
+                <div className="relative mx-auto max-w-7xl">
+                  <h2 className="text-center text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-left xl:text-6xl">
+                    {data.post.title}
+                  </h2>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className='bg-green-100 text-center'>
-          Lost and looking for a place to start?
-          <a
-            href='https://tina.io/guides/tina-cloud/getting-started/overview/'
-            className='text-blue-500 underline'
-          >
-            {' '}
-            Check out this guide
-          </a>{' '}
-          to see how add TinaCMS to an existing Next.js site.
+      </div>
+
+      <div className="overflow-hidden bg-gray-900 py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl md:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:grid-cols-2 lg:items-start">
+            <div className="px-6 lg:px-0 lg:pr-4 lg:pt-4">
+              <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-lg">
+                <h2 className="text-base font-semibold leading-7 text-yellow-500">{data.post.brand}</h2>
+                <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                  {data.post.title}
+                </p>
+                <p className="mt-6 text-lg leading-7 text-gray-500">{data.post.detailsCar}</p>
+              </div>
+            </div>
+            <div className="mx-auto px-8 ">
+    <div className="bg-gray-900">
+      <div className="pt-24 mx-auto max-w-7xl sm:pt-32 lg:px-8">
+        <h2 className="text-3xl font-bold tracking-tight text-center text-white sm:text-4xl">Gallery</h2>
+        <div className="grid grid-cols-2 mt-16 md:grid-cols-3">
+        {data.post.gallery.map((item, index) => (
+          item.image ?
+          <Image
+            key={index}
+            src={item.image}
+            width={600}
+            height={400}
+            alt={item.caption || 'Gallery image'} 
+            className={index === 8 ? 'hidden md:block' : ''}
+            onClick={() => {
+              setOpen(true);
+              setCurrentIndex(index);
+            }}
+          />
+         : null ))}
+
+        </div>
+        <Lightbox
+          isOpen={isOpen}
+          onPrev={gotoPrevious}
+          onNext={gotoNext}
+          images={data.post.gallery}
+          currentIndex={currentImageIndex}
+          onClose={() => setOpen(false)}
+          className="bg-black/n 80"
+          renderNextButton={() => <Arrow action={gotoNext} direction="right" />}
+          renderPrevButton={() => <Arrow action={gotoPrevious} direction="left" />}
+          renderHeader={() => <Header setOpen={setOpen} />}
+        />
+            </div>
+            </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
-  )
+  );
 }
 
 export const getStaticProps = async ({ params }) => {
@@ -87,132 +149,34 @@ export const getStaticPaths = async () => {
   }
 }
 
-export default BlogPage
+export default CarPage
 
 const PageSection = (props) => {
   return (
-    <>
-      <h2>{props.heading}</h2>
-      <p>{props.content}</p>
-    </>
+      <div>{props.heading}</div>
   )
 }
 
-const components = {
-  PageSection: PageSection,
+
+function Arrow({ action, direction }: { action: Function; direction: string }) {
+  return (
+    <button className="z-10">
+      <span className="sr-only">Chiudi galleria immagini</span>
+      <ChevronRightIcon
+        onClick={() => action()}
+        className={`size-12 text-white ${direction == 'left' ? 'rotate-180 md:ml-20' : 'md:mr-20'}`}
+      />
+    </button>
+  )
 }
 
-const ContentSection = ({ content }) => {
+function Header({ setOpen }: { setOpen: Function }) {
   return (
-    <div className='relative py-16 bg-white overflow-hidden text-black'>
-      <div className='hidden lg:block lg:absolute lg:inset-y-0 lg:h-full lg:w-full'>
-        <div
-          className='relative h-full text-lg max-w-prose mx-auto'
-          aria-hidden='true'
-        >
-          <svg
-            className='absolute top-12 left-full transform translate-x-32'
-            width={404}
-            height={384}
-            fill='none'
-            viewBox='0 0 404 384'
-          >
-            <defs>
-              <pattern
-                id='74b3fd99-0a6f-4271-bef2-e80eeafdf357'
-                x={0}
-                y={0}
-                width={20}
-                height={20}
-                patternUnits='userSpaceOnUse'
-              >
-                <rect
-                  x={0}
-                  y={0}
-                  width={4}
-                  height={4}
-                  className='text-gray-200'
-                  fill='currentColor'
-                />
-              </pattern>
-            </defs>
-            <rect
-              width={404}
-              height={384}
-              fill='url(#74b3fd99-0a6f-4271-bef2-e80eeafdf357)'
-            />
-          </svg>
-          <svg
-            className='absolute top-1/2 right-full transform -translate-y-1/2 -translate-x-32'
-            width={404}
-            height={384}
-            fill='none'
-            viewBox='0 0 404 384'
-          >
-            <defs>
-              <pattern
-                id='f210dbf6-a58d-4871-961e-36d5016a0f49'
-                x={0}
-                y={0}
-                width={20}
-                height={20}
-                patternUnits='userSpaceOnUse'
-              >
-                <rect
-                  x={0}
-                  y={0}
-                  width={4}
-                  height={4}
-                  className='text-gray-200'
-                  fill='currentColor'
-                />
-              </pattern>
-            </defs>
-            <rect
-              width={404}
-              height={384}
-              fill='url(#f210dbf6-a58d-4871-961e-36d5016a0f49)'
-            />
-          </svg>
-          <svg
-            className='absolute bottom-12 left-full transform translate-x-32'
-            width={404}
-            height={384}
-            fill='none'
-            viewBox='0 0 404 384'
-          >
-            <defs>
-              <pattern
-                id='d3eb07ae-5182-43e6-857d-35c643af9034'
-                x={0}
-                y={0}
-                width={20}
-                height={20}
-                patternUnits='userSpaceOnUse'
-              >
-                <rect
-                  x={0}
-                  y={0}
-                  width={4}
-                  height={4}
-                  className='text-gray-200'
-                  fill='currentColor'
-                />
-              </pattern>
-            </defs>
-            <rect
-              width={404}
-              height={384}
-              fill='url(#d3eb07ae-5182-43e6-857d-35c643af9034)'
-            />
-          </svg>
-        </div>
-      </div>
-      <div className='relative px-4 sm:px-6 lg:px-8'>
-        <div className='text-lg max-w-prose mx-auto'>
-          <TinaMarkdown components={components} content={content} />
-        </div>
-      </div>
+    <div className="flex justify-end">
+      <span className="sr-only">Scorri immagini</span>
+      <button>
+        <XMarkIcon onClick={() => setOpen(false)} className="m-4 text-white size-10" />
+      </button>
     </div>
   )
 }

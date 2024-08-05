@@ -1,5 +1,11 @@
 ---
-title: Hello, World!
+title: Ferrari quella rossa
+imgSrc: /preview.jpg
+brand: Ferrari
+detailsCar: A me piace bianca però
+gallery:
+  - image: /hero.jpg
+    caption: Lamborghin Brum
 ---
 
 ## Hello World!

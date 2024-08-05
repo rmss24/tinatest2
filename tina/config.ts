@@ -64,9 +64,36 @@ export default defineConfig({
             label: 'Hero image',
             name: 'imgSrc',
           },
+          {
+            type: "string",
+            name: "brand",
+            label: "Brand",
+          },
+          {
+            type: "string",
+            name: "detailsCar",
+            label: "Details Car",
+          },
+          {
+            type: "object",
+            name: "gallery",
+            label: "Gallery",
+            list: true,
+            fields: [
+              {
+                type: "image",
+                name: "image",
+                label: "Image",
+              },
+              {
+                type: "string",
+                name: "caption",
+                label: "Caption",
+              },
+            ],
+          },
         ],
         ui: {
-          // This is an DEMO router. You can remove this to fit your site
           router: ({ document }) => `/demo/blog/${document._sys.filename}`,
         },
       },
